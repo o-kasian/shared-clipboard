@@ -8,6 +8,11 @@ repositories {
     jcenter()
 }
 
+configurations {
+    compile.exclude module: "spring-boot-starter-tomcat"
+}
+
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compile group: 'org.jasypt', name: 'jasypt', version: '1.9.2'
 }
