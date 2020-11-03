@@ -40,7 +40,7 @@ public class ChannelConsumer {
     @Autowired
     private ClipboardProducer clipboardProducer;
 
-    @Scheduled(fixedRate = 100)
+    @Scheduled(fixedRate = 1000)
     public void poll() {
         final String data = restTemplate.getForObject(uri + "/poll/" + clientId + "?ts={ts}", String.class, lastTime);
         if (!NONE.equals(data)) {
