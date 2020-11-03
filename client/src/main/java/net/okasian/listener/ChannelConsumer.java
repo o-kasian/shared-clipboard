@@ -25,9 +25,14 @@ public class ChannelConsumer {
     private String clientId;
 
     private volatile long lastTime = System.currentTimeMillis();
-    private RestTemplate restTemplate = new RestTemplate();
 
-    public ChannelConsumer() {
+
+    @Autowired
+    private ClipboardProducer clipboardProducer;
+
+    @Scheduled(fixedRate = 1000)
+    public void poll() {
+        final RestTemplate restTemplate = new RestTemplate();
         restTemplate.setInterceptors(Arrays.asList((request, body, execution) -> {
             request.getHeaders().add("Accept", "*/*");
             request.getHeaders().add("Accept-Encoding", "gzip deflate br");
@@ -35,13 +40,6 @@ public class ChannelConsumer {
             request.getHeaders().add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:82.0) Gecko/20100101 Firefox/82.0");
             return execution.execute(request, body);
         }));
-    }
-
-    @Autowired
-    private ClipboardProducer clipboardProducer;
-
-    @Scheduled(fixedRate = 1000)
-    public void poll() {
         final String data = restTemplate.getForObject(uri + "/poll/" + clientId + "?ts={ts}", String.class, lastTime);
         if (!NONE.equals(data)) {
             clipboardProducer.produce(data);
